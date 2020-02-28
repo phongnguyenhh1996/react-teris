@@ -4,7 +4,7 @@ const MainBoard = styled.div`
   width: ${(props) => props.cellSize*props.columns}px;
   height: ${(props) => props.cellSize*props.rows}px;
   position: relative;
-  background-color: #aaa;
+  background-color: #ECF0F1;
   margin: auto;
 `
 
@@ -17,6 +17,7 @@ const MainBoard__cell = styled.div`
   right: ${(props) => props.position.right && props.position.right*props.cellSize}px;
   bottom: ${(props) => props.position.bottom && props.position.bottom*props.cellSize}px;
   background-color: red;
+  transition: all .3s ease;
 `
 
 export default {
