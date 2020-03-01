@@ -8,16 +8,18 @@ const MainBoard = styled.div`
   margin: auto;
 `
 
-const MainBoard__cell = styled.div`
+const MainBoard__cell = styled.div.attrs(props => ({
+  style: {
+    top: props.position.top && props.position.top*props.cellSize + 'px',
+    left: props.position.left && props.position.left*props.cellSize + 'px',
+    right: props.position.right && props.position.right*props.cellSize + 'px',
+    bottom: props.position.bottom && props.position.bottom*props.cellSize + 'px'
+  }
+}))`
   width: ${props => props.cellSize}px;
   height: ${props => props.cellSize}px;
   position: absolute;
-  top: ${(props) => props.position.top && props.position.top*props.cellSize}px;
-  left: ${(props) => props.position.left && props.position.left*props.cellSize}px;
-  right: ${(props) => props.position.right && props.position.right*props.cellSize}px;
-  bottom: ${(props) => props.position.bottom && props.position.bottom*props.cellSize}px;
-  background-color: red;
-  transition: all .3s ease;
+  background: ${(props) => props.position.color};
 `
 
 export default {
