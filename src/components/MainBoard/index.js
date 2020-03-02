@@ -5,7 +5,7 @@ const MainBoard = (props) => {
   return (
     <Styled.MainBoard {...props.gameSettings} isShake={props.isShake} onAnimationEnd={() => props.setShake(false)}>
       {props.cellsPosition.map((cellPosition, index) => (
-        <Styled.MainBoard__cell key={index} {...props.gameSettings} position={cellPosition} />
+        <Styled.MainBoard__cell key={`${index}-${cellPosition.direction}`} {...props.gameSettings} position={cellPosition} />
       ))}
       {props.shadowShapePosition.map((cellPosition) => (
         <Styled.MainBoard__cell key={cellPosition.id} {...props.gameSettings} position={cellPosition} isShadow />
