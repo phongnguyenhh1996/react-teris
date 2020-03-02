@@ -12,7 +12,6 @@ const gameSettings = {
   fallStep: 0,
   controlSpeed: 60,
   fps: 60,
-  bonusTimeControlStep: 0 
 }
 const shapes = Shapes(gameSettings)
 const shapesData = [{
@@ -31,9 +30,11 @@ const control = {
   currentDirection: random(shapesData[0].direction)
 }
 
+const initShape = shapes(shapesData[0].name, control.currentDirection)
+
 function App() {
-  const [cellPosition, setCellPosition] = useState(shapes(shapesData[0].name, control.currentDirection))
-  
+  const [cellPosition, setCellPosition] = useState(initShape)
+  const [isShake, setShake] = useState(false)
   const seperatorCell = data => {
     const newCellPosition = cloneDeep(data)
     const cellPositionWithoutShape = newCellPosition.filter(cell => !cell.userControl && !cell.isFalling)
@@ -46,12 +47,25 @@ function App() {
 
   const handleCollusion = (shape, allRestCell) => {
     const checkBottomCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top + 1 === cell.top && element.left === cell.left).length > 0
+    const checkLeftCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top === cell.top && element.left - 1 === cell.left).length > 0
+    const checkRightCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top === cell.top && element.left + 1 === cell.left).length > 0
+
     const isBottomCollusionCell = allRestCell.filter(cell => checkBottomCollisionShape(shape, cell)).length > 0
     const isBottomCollusionGround = shape.filter(element => element.top + 1 === gameSettings.rows).length > 0
-    console.log(isBottomCollusionCell, isBottomCollusionGround);
-    
+    const isBottomCollusion = isBottomCollusionCell || isBottomCollusionGround
+
+    const isLeftCollusionCell = allRestCell.filter(cell => checkLeftCollisionShape(shape, cell)).length > 0
+    const isLeftCollusionGround = shape.filter(element => element.left - 1 < 0).length > 0
+    const isLeftCollusion = isLeftCollusionCell || isLeftCollusionGround
+
+    const isRightCollusionCell = allRestCell.filter(cell => checkRightCollisionShape(shape, cell)).length > 0
+    const isRightCollusionGround = shape.filter(element => element.left + 1 >= gameSettings.columns).length > 0
+    const isRightCollusion = isRightCollusionCell || isRightCollusionGround
+
     return {
-      isBottomCollusion: isBottomCollusionCell || isBottomCollusionGround
+      isBottomCollusion,
+      isLeftCollusion,
+      isRightCollusion
     }
   }
 
@@ -75,14 +89,47 @@ function App() {
   }
 
   const getShapeInfo = (shape) => {
-    let x = shape[0].left
-    let y = shape[0].top
+    if (shape.length === 0) {
+      return {}
+    }
+    let xMin = shape[0].left
+    let yMin = shape[0].top
+    let xMax = shape[0].left
+    let yMax = shape[0].top
     shape.forEach(cell => {
-      if (cell.left < x) x = cell.left;
-      if (cell.top < y) y = cell.top;
+      if (cell.left < xMin) xMin = cell.left;
+      if (cell.top < yMin) yMin = cell.top;
+      if (cell.left > xMax) xMax = cell.left;
+      if (cell.top > yMax) yMax = cell.top
     })
-    return { x, y, color: shape[0].color }
+    return { xMin, yMin, xMax, yMax, color: shape[0].color }
   }
+
+  const createShadowShape = (shape, allRestCell) => {
+    // const { yMin, yMax } = getShapeInfo(allRestCell)
+    const shapeInfo = getShapeInfo(shape)
+    const allCellSameColumns = allRestCell.filter(cell => cell.left >= shapeInfo.xMin && cell.left <= shapeInfo.xMax)
+    const allCellSameColumnsInfo = getShapeInfo(allCellSameColumns)
+    if (!allCellSameColumnsInfo.yMin || !allCellSameColumnsInfo.yMax) {
+      return shapes(shapesData[0].name, control.currentDirection, shapeInfo.xMin, gameSettings.rows - 1 - (shapeInfo.yMax - shapeInfo.yMin), shapeInfo.color)
+    }
+    let newShape = []
+    
+    for (let i = allCellSameColumnsInfo.yMin - (shapeInfo.yMax - shapeInfo.yMin + 1); i < allCellSameColumnsInfo.yMin + (shapeInfo.yMax - shapeInfo.yMin); i++) {
+      const newTestShape = shapes(shapesData[0].name, control.currentDirection, shapeInfo.xMin, i, shapeInfo.color)
+      
+      const { isBottomCollusion } = handleCollusion(newTestShape, allCellSameColumns)
+      
+      if (isBottomCollusion) {
+        newShape = newTestShape
+        break
+      }
+      
+    }
+    return newShape
+  }
+
+  const [shadowShapePosition, setShadowShapePosition] = useState(createShadowShape(initShape, []))
 
   useEffect(() => {
     const cellFallHandle = setInterval(() => {
@@ -90,15 +137,19 @@ function App() {
         cellPositionWithShape,
         cellPositionWithoutShape,
       } = seperatorCell(cellPosition)
-      const { isBottomCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
+      const { isBottomCollusion, isLeftCollusion, isRightCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
       gameSettings.fallStep += gameSettings.fps
       if (!isBottomCollusion || (isBottomCollusion && !shapeOnControl.isPrepareOnGround)) {
-        if (control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
+        if (!isLeftCollusion && control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
           cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, left: cell.left - 1}))
+          const shadowShape = createShadowShape(cellPositionWithShape, cellPositionWithoutShape)
+          setShadowShapePosition(shadowShape)
           control.controlSpeedStep = 0
         }
-        if (control.right && control.controlSpeedStep >= gameSettings.controlSpeed) {
+        if (!isRightCollusion && control.right && control.controlSpeedStep >= gameSettings.controlSpeed) {
           cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, left: cell.left + 1}))
+          const shadowShape = createShadowShape(cellPositionWithShape, cellPositionWithoutShape)
+          setShadowShapePosition(shadowShape)
           control.controlSpeedStep = 0
         }
       }
@@ -110,13 +161,26 @@ function App() {
           } else {
             cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
             control.currentDirection = random(shapesData[0].direction)
-            cellPositionWithShape.push(...shapes(shapesData[0].name, control.currentDirection))
+            const newShape = shapes(shapesData[0].name, control.currentDirection)
+            const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
+            cellPositionWithShape.push(...newShape)
+            setShadowShapePosition(shadowShape)
             shapeOnControl.isPrepareOnGround = false
           }
         } else {
           cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, isFalling: true, top: cell.top + 1}))
           shapeOnControl.isPrepareOnGround = false
         }
+      }
+      if (control.down) {
+        cellPositionWithShape = shadowShapePosition.map(cell => ({...cell, isFalling: false, userControl: false}))
+        control.currentDirection = random(shapesData[0].direction)
+        const newShape = shapes(shapesData[0].name, control.currentDirection)
+        const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
+        cellPositionWithShape.push(...newShape)
+        setShadowShapePosition(shadowShape)
+        setShake('true')
+        control.down = false
       }
       // if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
       //   control.controlSpeedStep = 0
@@ -148,8 +212,6 @@ function App() {
   }, [cellPosition])
 
   const handleKeyDown = (e) => {
-    console.log(e.keyCode);
-    
     switch (e.keyCode) {
       case 37:
         control.left = true
@@ -162,6 +224,9 @@ function App() {
       case 38:
         control.rotate = true
         control.controlSpeedStep += gameSettings.fps
+        break;
+      case 40:
+        control.down = true
         break;
       default:
         break;
@@ -199,7 +264,7 @@ function App() {
   return (
     <div className="App">
       <h1>TERIS</h1>
-      <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} />
+      <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
     </div>
   );
 }

@@ -1,4 +1,25 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const shakeAnimation = keyframes`
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+`
 
 const MainBoard = styled.div`
   width: ${(props) => props.cellSize*props.columns}px;
@@ -6,6 +27,7 @@ const MainBoard = styled.div`
   position: relative;
   background-color: #ECF0F1;
   margin: auto;
+  animation: ${props => props.isShake && shakeAnimation} 0.3s linear ;
 `
 
 const MainBoard__cell = styled.div.attrs(props => ({
@@ -20,6 +42,8 @@ const MainBoard__cell = styled.div.attrs(props => ({
   height: ${props => props.cellSize}px;
   position: absolute;
   background: ${(props) => props.position.color};
+  transition: left .3s ease, top .15s ease;
+  opacity: ${props => props.isShadow ? 0.2 : 1}
 `
 
 export default {

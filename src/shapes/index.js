@@ -1,3 +1,4 @@
+import { uniqueId } from "lodash";
 const colorArr = ["#A848E3", "#E4E250", "#F6A8DE", "#ABE124", "#D04D41", "#F20B35", "#2ED8DB", "#1708EF", "#F6847E", "#FCB01E", "#39FBBD", "#6FFA14"]
 
 const shapes = {
@@ -37,7 +38,8 @@ const generateShape = (shapeName, direction, x0, y0, customColor) => {
           left: x0  + j,
           isFalling: true,
           userControl: true,
-          color: customColor || color
+          color: customColor || color,
+          id: uniqueId('shadow-')
         })
       }
     }
