@@ -19,6 +19,9 @@ const shapesData = [{
   name: 't',
   direction: 3
 }]
+const shapeOnControl = {
+  isPrepareOnGround: false
+}
 const control = {
   left: false,
   right: false,
@@ -33,8 +36,8 @@ function App() {
   
   const seperatorCell = data => {
     const newCellPosition = cloneDeep(data)
-    const cellPositionWithoutShape = newCellPosition.filter(cell => !cell.userControl)
-    const cellPositionWithShape = newCellPosition.filter(cell => cell.userControl)
+    const cellPositionWithoutShape = newCellPosition.filter(cell => !cell.userControl && !cell.isFalling)
+    const cellPositionWithShape = newCellPosition.filter(cell => cell.userControl && cell.isFalling)
     return {
       cellPositionWithShape,
       cellPositionWithoutShape,
@@ -42,11 +45,13 @@ function App() {
   }
 
   const handleCollusion = (shape, allRestCell) => {
-    const checkBottomCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top + 1 === cell.top).length > 0
+    const checkBottomCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top + 1 === cell.top && element.left === cell.left).length > 0
     const isBottomCollusionCell = allRestCell.filter(cell => checkBottomCollisionShape(shape, cell)).length > 0
-    const isBottomCollusionGround = shape.filter(element => element.top + 1 === gameSettings.rows - 1)
+    const isBottomCollusionGround = shape.filter(element => element.top + 1 === gameSettings.rows).length > 0
+    console.log(isBottomCollusionCell, isBottomCollusionGround);
+    
     return {
-      isBottomCollusion: isBottomCollusionCell && isBottomCollusionGround
+      isBottomCollusion: isBottomCollusionCell || isBottomCollusionGround
     }
   }
 
@@ -84,60 +89,57 @@ function App() {
       let {
         cellPositionWithShape,
         cellPositionWithoutShape,
-        isShapeBottomTouched,
-        isShapeLeftTouched,
-        isShapeRightTouched
-      } = handleCellData(cellPosition)
+      } = seperatorCell(cellPosition)
+      const { isBottomCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
       gameSettings.fallStep += gameSettings.fps
-      if (gameSettings.bonusTimeControlStep > 0) {
-        gameSettings.bonusTimeControlStep -= gameSettings.fps
-      }
-      if (gameSettings.bonusTimeControlStep < 0) {
-        gameSettings.bonusTimeControlStep = 0
-      }
-      if (gameSettings.fallStep >= gameSettings.fallSpeed) {
-        gameSettings.fallStep = 0
-        if (isShapeBottomTouched) {
-          cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, isFalling: false}))
-          control.currentDirection = random(shapesData[0].direction)
-          cellPositionWithShape.push(...shapes(shapesData[0].name, control.currentDirection))
-          gameSettings.bonusTimeControlStep = gameSettings.fallSpeed
-        } else {
-          cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, top: cell.top + 1}))
-        }
-      }
-      if (!isShapeBottomTouched || gameSettings.bonusTimeControlStep > 0) {
-        if (!isShapeLeftTouched && control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
+      if (!isBottomCollusion || (isBottomCollusion && !shapeOnControl.isPrepareOnGround)) {
+        if (control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
           cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, left: cell.left - 1}))
           control.controlSpeedStep = 0
         }
-        if (!isShapeRightTouched && control.right && control.controlSpeedStep >= gameSettings.controlSpeed) {
+        if (control.right && control.controlSpeedStep >= gameSettings.controlSpeed) {
           cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, left: cell.left + 1}))
           control.controlSpeedStep = 0
         }
       }
-      if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
-        control.controlSpeedStep = 0
-        const newDirection = (control.currentDirection + 1) % (shapesData[0].direction + 1)
-        const checkAndCreateShapeWithDir = (newCellPosition) => {
-          let {
-            cellPositionWithShape,
-            isShapeBottomTouched,
-            isShapeLeftTouched,
-            isShapeRightTouched
-          } = handleCellData(newCellPosition)
-          if (!isShapeBottomTouched && !isShapeLeftTouched && !isShapeRightTouched) {
-            return cellPositionWithShape
-          } 
-          return null
-        }
-        const {x, y, color} = getShapeInfo(cellPositionWithShape)
-        const newCellPositionWithShape = checkAndCreateShapeWithDir([...cellPositionWithoutShape, ...shapes(shapesData[0].name, newDirection, x, y, color)])
-        if (newCellPositionWithShape !== null) {
-          control.currentDirection = newDirection
-          cellPositionWithShape = newCellPositionWithShape
+      if (gameSettings.fallStep >= gameSettings.fallSpeed) {
+        gameSettings.fallStep = 0
+        if (isBottomCollusion) {
+          if (!shapeOnControl.isPrepareOnGround) {
+            shapeOnControl.isPrepareOnGround = true
+          } else {
+            cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
+            control.currentDirection = random(shapesData[0].direction)
+            cellPositionWithShape.push(...shapes(shapesData[0].name, control.currentDirection))
+            shapeOnControl.isPrepareOnGround = false
+          }
+        } else {
+          cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, isFalling: true, top: cell.top + 1}))
+          shapeOnControl.isPrepareOnGround = false
         }
       }
+      // if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
+      //   control.controlSpeedStep = 0
+      //   const newDirection = (control.currentDirection + 1) % (shapesData[0].direction + 1)
+      //   const checkAndCreateShapeWithDir = (newCellPosition) => {
+      //     let {
+      //       cellPositionWithShape,
+      //       isShapeBottomTouched,
+      //       isShapeLeftTouched,
+      //       isShapeRightTouched
+      //     } = handleCellData(newCellPosition)
+      //     if (!isShapeBottomTouched && !isShapeLeftTouched && !isShapeRightTouched) {
+      //       return cellPositionWithShape
+      //     } 
+      //     return null
+      //   }
+      //   const {x, y, color} = getShapeInfo(cellPositionWithShape)
+      //   const newCellPositionWithShape = checkAndCreateShapeWithDir([...cellPositionWithoutShape, ...shapes(shapesData[0].name, newDirection, x, y, color)])
+      //   if (newCellPositionWithShape !== null) {
+      //     control.currentDirection = newDirection
+      //     cellPositionWithShape = newCellPositionWithShape
+      //   }
+      // }
       setCellPosition([...cellPositionWithoutShape, ...cellPositionWithShape])
     }, gameSettings.fps);
     return () => {

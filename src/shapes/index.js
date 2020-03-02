@@ -36,8 +36,6 @@ const generateShape = (shapeName, direction, x0, y0, customColor) => {
           top: y0 + i,
           left: x0  + j,
           isFalling: true,
-          isPrepareOnGround: false,
-          isOnGround: false,
           userControl: true,
           color: customColor || color
         })
