@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainBoard from "./components/MainBoard";
 import './App.css';
 import Shapes from './shapes';
-import { cloneDeep, random } from 'lodash';
+import { cloneDeep, random, keyBy } from 'lodash';
 
 const gameSettings = {
   cellSize: 25,
@@ -12,6 +12,7 @@ const gameSettings = {
   fallStep: 0,
   controlSpeed: 60,
   fps: 60,
+  isCaculatePoint: false
 }
 const shapes = Shapes(gameSettings)
 const shapesData = [{
@@ -119,11 +120,32 @@ function App() {
 
   const [shadowShapePosition, setShadowShapePosition] = useState(createShadowShape(initShape, []))
 
+  const handleFallingCell = (cells) => {
+    const newDataWithoutFallingCell = []
+    for (let i = 0; i < gameSettings.columns - 1; i++) {
+
+      const colCells = keyBy(cells.filter(cell => cell.left === i), o => o.top)
+      const newColCells = {}
+      Object.keys(colCells).reverse().forEach(key => {
+        for (let i = gameSettings.rows - 1; i > parseInt(key) ; i--) {
+          if (newColCells[i] === undefined) {
+            newColCells[i] = {...colCells[key], top: i}
+            break
+          }
+        }
+      })
+      newDataWithoutFallingCell.push(...Object.values(newColCells))
+    }
+    
+    return newDataWithoutFallingCell
+  }
+
   const calculatePointAndCellsPosition = (cellPosition, shape = []) => {
     const rows = {}
     const scoreRows = []
-    let newCellPosition = [...cellPosition, ...shape]
-    newCellPosition.forEach(cell => {
+    const { cellPositionWithShape, cellPositionWithoutShape } = seperatorCell([...cellPosition, ...shape])
+    let newCellPositionWithoutShape = [...cellPositionWithoutShape]
+    newCellPositionWithoutShape.forEach(cell => {
       if (!rows[cell.top]) {
         rows[cell.top] = 1
       } else {
@@ -132,18 +154,19 @@ function App() {
     })
     Object.keys(rows).forEach(row => {
       if (rows[row] === gameSettings.columns) {
-        scoreRows.push(row)
+        scoreRows.push(parseInt(row))
       }
     })
     if (scoreRows.length > 0) {
-      newCellPosition = newCellPosition.filter(cell => !scoreRows.includes(cell.top.toString()))
-      newCellPosition = newCellPosition.map(cell => ({...cell, isFalling: true}))
-      console.log(newCellPosition);
-    }
-    if (newCellPosition.length !== [...cellPosition, ...shape].length) {
-      return newCellPosition
+      newCellPositionWithoutShape = newCellPositionWithoutShape.filter(cell => !scoreRows.includes(cell.top))
+      newCellPositionWithoutShape = handleFallingCell(newCellPositionWithoutShape)
     } else {
-      return [...cellPosition]
+      return [...cellPositionWithoutShape, ...cellPositionWithShape]
+    }
+    if (newCellPositionWithoutShape.length !== cellPositionWithoutShape.length) {
+      return [...newCellPositionWithoutShape, ...cellPositionWithShape]
+    } else {
+      return [...cellPositionWithoutShape, ...cellPositionWithShape]
     }
   }
 
@@ -177,8 +200,8 @@ function App() {
           if (!shapeOnControl.isPrepareOnGround) {
             shapeOnControl.isPrepareOnGround = true
           } else {
+            gameSettings.isCaculatePoint = true
             cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
-            cellPositionWithoutShape = calculatePointAndCellsPosition(cellPositionWithoutShape, cellPositionWithShape)
             control.currentDirection = random(shapesData[0].direction)
             const newShape = shapes(shapesData[0].name, control.currentDirection)
             const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
@@ -192,14 +215,15 @@ function App() {
         }
       }
       if (control.down) {
-        cellPositionWithShape = shadowShapePosition.map(cell => ({...cell, isFalling: false, userControl: false}))
+        gameSettings.isCaculatePoint = true
+        const newCellPositionWithShape = shadowShapePosition.map((cell, index) => ({...cell, isFalling: false, userControl: false, id: cellPositionWithShape[index].id}))
+        cellPositionWithShape = newCellPositionWithShape
         control.currentDirection = random(shapesData[0].direction)
         const newShape = shapes(shapesData[0].name, control.currentDirection)
         const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
         cellPositionWithShape.push(...newShape)
         setShadowShapePosition(shadowShape)
         setShake(true)
-        cellPositionWithoutShape = calculatePointAndCellsPosition(cellPositionWithoutShape, cellPositionWithShape)
         control.down = false
       }
       if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
@@ -227,7 +251,12 @@ function App() {
         }
       }
       
-      setCellPosition([...cellPositionWithoutShape, ...cellPositionWithShape])
+      let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
+      if (gameSettings.isCaculatePoint) {
+        newCellPosition = calculatePointAndCellsPosition(newCellPosition)
+        gameSettings.isCaculatePoint = false
+      }
+      setCellPosition(newCellPosition)
     }, gameSettings.fps);
     return () => {
       clearInterval(cellFallHandle)

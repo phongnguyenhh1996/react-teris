@@ -64,7 +64,7 @@ const generateShape = (shapeName, direction, x0, y0, customColor, isRotate) => {
           userControl: true,
           direction,
           color: customColor || color,
-          id: uniqueId('shadow-')
+          id: uniqueId(uniqueId('shape-') + '-')
         })
       }
     }

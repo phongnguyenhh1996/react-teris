@@ -8,7 +8,7 @@ const MainBoard = (props) => {
         <Styled.MainBoard__cell key={cellPosition.id} {...props.gameSettings} position={cellPosition} />
       ))}
       {props.shadowShapePosition.map((cellPosition) => (
-        <Styled.MainBoard__cell key={cellPosition.id} {...props.gameSettings} position={cellPosition} isShadow />
+        <Styled.MainBoard__cell key={`shadow-${cellPosition.id}`} {...props.gameSettings} position={cellPosition} isShadow />
       ))}
     </Styled.MainBoard>
   )
