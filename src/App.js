@@ -119,6 +119,34 @@ function App() {
 
   const [shadowShapePosition, setShadowShapePosition] = useState(createShadowShape(initShape, []))
 
+  const calculatePointAndCellsPosition = (cellPosition, shape = []) => {
+    const rows = {}
+    const scoreRows = []
+    let newCellPosition = [...cellPosition, ...shape]
+    newCellPosition.forEach(cell => {
+      if (!rows[cell.top]) {
+        rows[cell.top] = 1
+      } else {
+        rows[cell.top] += 1
+      }
+    })
+    Object.keys(rows).forEach(row => {
+      if (rows[row] === gameSettings.columns) {
+        scoreRows.push(row)
+      }
+    })
+    if (scoreRows.length > 0) {
+      newCellPosition = newCellPosition.filter(cell => !scoreRows.includes(cell.top.toString()))
+      newCellPosition = newCellPosition.map(cell => ({...cell, isFalling: true}))
+      console.log(newCellPosition);
+    }
+    if (newCellPosition.length !== [...cellPosition, ...shape].length) {
+      return newCellPosition
+    } else {
+      return [...cellPosition]
+    }
+  }
+
   useEffect(() => {
     const cellFallHandle = setInterval(() => {
       let {
@@ -126,7 +154,7 @@ function App() {
         cellPositionWithoutShape,
       } = seperatorCell(cellPosition)
       const { isBottomCollusion, isLeftCollusion, isRightCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
-      gameSettings.fallStep += gameSettings.fps
+
       if (!isBottomCollusion || (isBottomCollusion && !shapeOnControl.isPrepareOnGround)) {
         if (!isLeftCollusion && control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
           cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell, left: cell.left - 1}))
@@ -141,13 +169,16 @@ function App() {
           control.controlSpeedStep = 0
         }
       }
+      gameSettings.fallStep += gameSettings.fps
       if (gameSettings.fallStep >= gameSettings.fallSpeed) {
         gameSettings.fallStep = 0
+      
         if (isBottomCollusion) {
           if (!shapeOnControl.isPrepareOnGround) {
             shapeOnControl.isPrepareOnGround = true
           } else {
             cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
+            cellPositionWithoutShape = calculatePointAndCellsPosition(cellPositionWithoutShape, cellPositionWithShape)
             control.currentDirection = random(shapesData[0].direction)
             const newShape = shapes(shapesData[0].name, control.currentDirection)
             const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
@@ -167,7 +198,8 @@ function App() {
         const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
         cellPositionWithShape.push(...newShape)
         setShadowShapePosition(shadowShape)
-        setShake('true')
+        setShake(true)
+        cellPositionWithoutShape = calculatePointAndCellsPosition(cellPositionWithoutShape, cellPositionWithShape)
         control.down = false
       }
       if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
@@ -184,6 +216,7 @@ function App() {
           return null
         }
         const {xMin, yMin, color} = getShapeInfo(cellPositionWithShape)
+        
         const newCellPositionWithShape = checkAndCreateShapeWithDir([...cellPositionWithoutShape, ...shapes(shapesData[0].name, newDirection, xMin, yMin, color, true)])
         
         if (newCellPositionWithShape !== null) {
@@ -193,6 +226,7 @@ function App() {
           setShadowShapePosition(shadowShape)
         }
       }
+      
       setCellPosition([...cellPositionWithoutShape, ...cellPositionWithShape])
     }, gameSettings.fps);
     return () => {

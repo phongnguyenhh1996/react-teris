@@ -27,7 +27,8 @@ const MainBoard = styled.div`
   position: relative;
   background-color: #ECF0F1;
   margin: auto;
-  animation: ${props => props.isShake && shakeAnimation} 0.3s linear ;
+  animation: ${props => props.isShake && shakeAnimation} 0.3s linear;
+  overflow: hidden;
 `
 
 const MainBoard__cell = styled.div.attrs(props => ({
