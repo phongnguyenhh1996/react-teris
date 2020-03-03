@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 
 const shakeAnimation = keyframes`
   0% {
@@ -18,6 +18,17 @@ const shakeAnimation = keyframes`
   }
   100% {
     transform: translate(0);
+  }
+`
+
+const fadeOutAnimation = keyframes`
+  0% {
+    transform: translateZ(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateZ(-80px);
+    opacity: 0;
   }
 `
 
@@ -44,7 +55,7 @@ const MainBoard__cell = styled.div.attrs(props => ({
   position: absolute;
   background: ${(props) => props.position.color};
   transition: left .3s ease, top .15s ease;
-  opacity: ${props => props.isShadow ? 0.2 : 1}
+  opacity: ${props => props.isShadow ? 0.2 : props.isDestroying ? 0 : 1};
 `
 
 export default {

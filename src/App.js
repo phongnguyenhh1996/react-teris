@@ -12,7 +12,9 @@ const gameSettings = {
   fallStep: 0,
   controlSpeed: 60,
   fps: 60,
-  isCaculatePoint: false
+  isCaculatePoint: false,
+  delayStep: 0,
+  delayTime: 300
 }
 const shapes = Shapes(gameSettings)
 const shapesData = [{
@@ -121,13 +123,14 @@ function App() {
   const [shadowShapePosition, setShadowShapePosition] = useState(createShadowShape(initShape, []))
 
   const handleFallingCell = (cells) => {
+    cells = cells.filter(cell => !cell.isDestroying)
     const newDataWithoutFallingCell = []
     for (let i = 0; i < gameSettings.columns - 1; i++) {
 
       const colCells = keyBy(cells.filter(cell => cell.left === i), o => o.top)
       const newColCells = {}
       Object.keys(colCells).reverse().forEach(key => {
-        for (let i = gameSettings.rows - 1; i > parseInt(key) ; i--) {
+        for (let i = gameSettings.rows - 1; i >= parseInt(key) ; i--) {
           if (newColCells[i] === undefined) {
             newColCells[i] = {...colCells[key], top: i}
             break
@@ -158,16 +161,12 @@ function App() {
       }
     })
     if (scoreRows.length > 0) {
-      newCellPositionWithoutShape = newCellPositionWithoutShape.filter(cell => !scoreRows.includes(cell.top))
-      newCellPositionWithoutShape = handleFallingCell(newCellPositionWithoutShape)
+      newCellPositionWithoutShape = newCellPositionWithoutShape.map(cell => ({...cell, isDestroying: scoreRows.includes(cell.top)}))
     } else {
       return [...cellPositionWithoutShape, ...cellPositionWithShape]
     }
-    if (newCellPositionWithoutShape.length !== cellPositionWithoutShape.length) {
-      return [...newCellPositionWithoutShape, ...cellPositionWithShape]
-    } else {
-      return [...cellPositionWithoutShape, ...cellPositionWithShape]
-    }
+    return [...newCellPositionWithoutShape, ...cellPositionWithShape]
+
   }
 
   useEffect(() => {
@@ -176,6 +175,20 @@ function App() {
         cellPositionWithShape,
         cellPositionWithoutShape,
       } = seperatorCell(cellPosition)
+      const destroyingCells = cellPositionWithoutShape.filter(cell => cell.isDestroying)
+      const isHaveDestroyingCells = destroyingCells.length > 0
+      if (isHaveDestroyingCells) {
+        if (gameSettings.delayStep >= gameSettings.delayTime) {
+          cellPositionWithoutShape = cellPositionWithoutShape.filter(cell => !cell.isDestroying)
+          cellPositionWithoutShape = handleFallingCell(cellPositionWithoutShape)
+          let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
+          gameSettings.isCaculatePoint = true
+          gameSettings.delayStep = 0
+          return setCellPosition(newCellPosition)
+        } else {
+          gameSettings.delayStep += gameSettings.fps
+        }
+      }
       const { isBottomCollusion, isLeftCollusion, isRightCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
 
       if (!isBottomCollusion || (isBottomCollusion && !shapeOnControl.isPrepareOnGround)) {
