@@ -3,6 +3,7 @@ import MainBoard from "./components/MainBoard";
 import './App.css';
 import Shapes from './shapes';
 import { cloneDeep, random, keyBy } from 'lodash';
+import allShapes from "./shapes/allShapes";
 
 const gameSettings = {
   cellSize: 25,
@@ -14,26 +15,31 @@ const gameSettings = {
   fps: 60,
   isCaculatePoint: false,
   delayStep: 0,
-  delayTime: 300
+  delayTime: 50
 }
 const shapes = Shapes(gameSettings)
-const shapesData = [{
-  name: 't',
-  direction: 3
-}]
+const shapesName = Object.keys(allShapes)
+const createRandomShape = () => {
+  const randomShape = shapesName[random(shapesName.length - 1)]
+  
+  return {
+    currentShape: randomShape,
+    currentDirection:  random(Object.keys(allShapes[randomShape]).length - 1)
+  }
+}
 const shapeOnControl = {
-  isPrepareOnGround: false
+  isPrepareOnGround: false,
+  ...createRandomShape()
 }
 const control = {
   left: false,
   right: false,
   rotate: false,
   down: false,
-  controlSpeedStep: gameSettings.controlSpeed,
-  currentDirection: random(shapesData[0].direction)
+  controlSpeedStep: gameSettings.controlSpeed
 }
 
-const initShape = shapes(shapesData[0].name, control.currentDirection)
+const initShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
 
 function App() {
   const [cellPosition, setCellPosition] = useState(initShape)
@@ -102,12 +108,12 @@ function App() {
     const allCellSameColumns = allRestCell.filter(cell => cell.left >= shapeInfo.xMin && cell.left <= shapeInfo.xMax)
     const allCellSameColumnsInfo = getShapeInfo(allCellSameColumns)
     if (!allCellSameColumnsInfo.yMin || !allCellSameColumnsInfo.yMax) {
-      return shapes(shapesData[0].name, control.currentDirection, shapeInfo.xMin, gameSettings.rows - 1 - (shapeInfo.yMax - shapeInfo.yMin), shapeInfo.color)
+      return shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection, shapeInfo.xMin, gameSettings.rows - 1 - (shapeInfo.yMax - shapeInfo.yMin), shapeInfo.color)
     }
     let newShape = []
     
     for (let i = allCellSameColumnsInfo.yMin - (shapeInfo.yMax - shapeInfo.yMin + 1); i < allCellSameColumnsInfo.yMin + (shapeInfo.yMax - shapeInfo.yMin); i++) {
-      const newTestShape = shapes(shapesData[0].name, control.currentDirection, shapeInfo.xMin, i, shapeInfo.color)
+      const newTestShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection, shapeInfo.xMin, i, shapeInfo.color)
       
       const { isBottomCollusion } = handleCollusion(newTestShape, allCellSameColumns)
       
@@ -123,23 +129,19 @@ function App() {
   const [shadowShapePosition, setShadowShapePosition] = useState(createShadowShape(initShape, []))
 
   const handleFallingCell = (cells) => {
+    const destroyRows = Object.keys(keyBy(cells.filter(cell => cell.isDestroying), o => o.top)).reverse()
     cells = cells.filter(cell => !cell.isDestroying)
     const newDataWithoutFallingCell = []
-    for (let i = 0; i < gameSettings.columns - 1; i++) {
-
-      const colCells = keyBy(cells.filter(cell => cell.left === i), o => o.top)
-      const newColCells = {}
-      Object.keys(colCells).reverse().forEach(key => {
-        for (let i = gameSettings.rows - 1; i >= parseInt(key) ; i--) {
-          if (newColCells[i] === undefined) {
-            newColCells[i] = {...colCells[key], top: i}
-            break
-          }
-        }
-      })
-      newDataWithoutFallingCell.push(...Object.values(newColCells))
-    }
     
+    for (let i = gameSettings.rows - 1; i > 0; i--) {
+      const rowCells = cells.filter(cell => cell.top === i)
+      if (rowCells.length === 0) {
+        continue
+      }
+      const stepFalling = destroyRows.filter(index => i < index).length
+      const newRowCells = rowCells.map(cell => ({...cell, top: cell.top + stepFalling}))
+      newDataWithoutFallingCell.push(...newRowCells)
+    }
     return newDataWithoutFallingCell
   }
 
@@ -179,7 +181,6 @@ function App() {
       const isHaveDestroyingCells = destroyingCells.length > 0
       if (isHaveDestroyingCells) {
         if (gameSettings.delayStep >= gameSettings.delayTime) {
-          cellPositionWithoutShape = cellPositionWithoutShape.filter(cell => !cell.isDestroying)
           cellPositionWithoutShape = handleFallingCell(cellPositionWithoutShape)
           let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
           gameSettings.isCaculatePoint = true
@@ -215,8 +216,10 @@ function App() {
           } else {
             gameSettings.isCaculatePoint = true
             cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
-            control.currentDirection = random(shapesData[0].direction)
-            const newShape = shapes(shapesData[0].name, control.currentDirection)
+            const newRandomShape = createRandomShape()
+            shapeOnControl.currentShape = newRandomShape.currentShape
+            shapeOnControl.currentDirection = newRandomShape.currentDirection
+            const newShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
             const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
             cellPositionWithShape.push(...newShape)
             setShadowShapePosition(shadowShape)
@@ -231,8 +234,10 @@ function App() {
         gameSettings.isCaculatePoint = true
         const newCellPositionWithShape = shadowShapePosition.map((cell, index) => ({...cell, isFalling: false, userControl: false, id: cellPositionWithShape[index].id}))
         cellPositionWithShape = newCellPositionWithShape
-        control.currentDirection = random(shapesData[0].direction)
-        const newShape = shapes(shapesData[0].name, control.currentDirection)
+        const newRandomShape = createRandomShape()
+        shapeOnControl.currentShape = newRandomShape.currentShape
+        shapeOnControl.currentDirection = newRandomShape.currentDirection
+        const newShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
         const shadowShape = createShadowShape(newShape, [...cellPositionWithoutShape, ...cellPositionWithShape])
         cellPositionWithShape.push(...newShape)
         setShadowShapePosition(shadowShape)
@@ -241,7 +246,8 @@ function App() {
       }
       if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
         control.controlSpeedStep = 0
-        const newDirection = (control.currentDirection + 1) % (shapesData[0].direction + 1)
+        const newDirection = (shapeOnControl.currentDirection + 1) % (Object.keys(allShapes[shapeOnControl.currentShape]).length)
+        
         const checkAndCreateShapeWithDir = (newCellPosition) => {
           const { cellPositionWithShape, cellPositionWithoutShape } = seperatorCell(newCellPosition)
           const {
@@ -254,10 +260,10 @@ function App() {
         }
         const {xMin, yMin, color} = getShapeInfo(cellPositionWithShape)
         
-        const newCellPositionWithShape = checkAndCreateShapeWithDir([...cellPositionWithoutShape, ...shapes(shapesData[0].name, newDirection, xMin, yMin, color, true)])
+        const newCellPositionWithShape = checkAndCreateShapeWithDir([...cellPositionWithoutShape, ...shapes(shapeOnControl.currentShape, newDirection, xMin, yMin, color, true)])
         
         if (newCellPositionWithShape !== null) {
-          control.currentDirection = newDirection
+          shapeOnControl.currentDirection = newDirection
           cellPositionWithShape = newCellPositionWithShape
           const shadowShape = createShadowShape(cellPositionWithShape, cellPositionWithoutShape)
           setShadowShapePosition(shadowShape)

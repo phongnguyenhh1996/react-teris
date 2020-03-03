@@ -1,40 +1,7 @@
 import { uniqueId } from "lodash";
-const colorArr = ["#A848E3", "#E4E250", "#F6A8DE", "#ABE124", "#D04D41", "#F20B35", "#2ED8DB", "#1708EF", "#F6847E", "#FCB01E", "#39FBBD", "#6FFA14"]
+import shapes from "./allShapes";
 
-const shapes = {
-  't': {
-    0: {
-      matrix: [
-        [1, 1, 1],
-        [0, 1, 0]
-      ],
-      center: [0, 1]
-    },
-    1: {
-      matrix: [
-        [0, 1],
-        [1, 1],
-        [0, 1]
-      ],
-      center: [1, 1]
-    },
-    2: {
-      matrix: [
-        [0, 1, 0],
-        [1, 1, 1]
-      ],
-      center: [1, 1]
-    },
-    3: {
-      matrix: [
-        [1, 0],
-        [1, 1],
-        [1, 0]
-      ],
-      center: [1, 0]
-    }
-  }
-}
+const colorArr = ["#A848E3", "#E4E250", "#F6A8DE", "#ABE124", "#D04D41", "#F20B35", "#2ED8DB", "#1708EF", "#F6847E", "#FCB01E", "#39FBBD", "#6FFA14"]
 
 const generateShape = (shapeName, direction, x0, y0, customColor, isRotate) => {
   const color = colorArr[Math.round(Math.random() * (colorArr.length - 1))]
