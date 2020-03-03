@@ -23,11 +23,13 @@ const shakeAnimation = keyframes`
 
 const fadeOutAnimation = keyframes`
   0% {
-    transform: translateZ(0);
+    transform: scale(1);
+    filter: blur(0px);
     opacity: 1;
   }
   100% {
-    transform: translateZ(-80px);
+    transform: scale(2);
+    filter: blur(4px);
     opacity: 0;
   }
 `
@@ -55,7 +57,8 @@ const MainBoard__cell = styled.div.attrs(props => ({
   position: absolute;
   background: ${(props) => props.position.color};
   transition: left .3s ease, top .15s ease;
-  opacity: ${props => props.isShadow ? 0.2 : props.isDestroying ? 0 : 1};
+  opacity: ${props => props.isShadow ? 0.2 : 1};
+  animation: ${props => props.position.isDestroying && fadeOutAnimation} 0.45s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
 `
 
 export default {

@@ -177,13 +177,13 @@ function App() {
         cellPositionWithShape,
         cellPositionWithoutShape,
       } = seperatorCell(cellPosition)
+
       const destroyingCells = cellPositionWithoutShape.filter(cell => cell.isDestroying)
       const isHaveDestroyingCells = destroyingCells.length > 0
       if (isHaveDestroyingCells) {
         if (gameSettings.delayStep >= gameSettings.delayTime) {
           cellPositionWithoutShape = handleFallingCell(cellPositionWithoutShape)
           let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
-          gameSettings.isCaculatePoint = true
           gameSettings.delayStep = 0
           return setCellPosition(newCellPosition)
         } else {
@@ -209,7 +209,7 @@ function App() {
       gameSettings.fallStep += gameSettings.fps
       if (gameSettings.fallStep >= gameSettings.fallSpeed) {
         gameSettings.fallStep = 0
-      
+
         if (isBottomCollusion) {
           if (!shapeOnControl.isPrepareOnGround) {
             shapeOnControl.isPrepareOnGround = true
