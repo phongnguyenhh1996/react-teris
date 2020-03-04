@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 const shakeAnimation = keyframes`
   0% {
@@ -38,7 +38,7 @@ const MainBoard = styled.div`
   width: ${(props) => props.cellSize*props.columns}px;
   height: ${(props) => props.cellSize*props.rows}px;
   position: relative;
-  background-color: #ECF0F1;
+  background-color: ${props => props.theme.backgroundMainBoard};
   margin: auto;
   animation: ${props => props.isShake && shakeAnimation} 0.3s linear;
   overflow: hidden;

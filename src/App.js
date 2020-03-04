@@ -4,6 +4,11 @@ import './App.css';
 import Shapes from './shapes';
 import { cloneDeep, random, keyBy } from 'lodash';
 import allShapes from "./shapes/allShapes";
+import { Container, ButtonGroup, Button } from 'reactstrap';
+import { ThemeProvider } from "styled-components";
+import createTheme from './themes';
+import { themeTypeName } from './themes/themesType';
+import { MainWrapper, MainHeading } from './components/ElementsStyled';
 
 const gameSettings = {
   cellSize: 25,
@@ -331,12 +336,29 @@ function App() {
       window.addEventListener('keyup', handleKeyUp)
     }
   }, [])
+
+  const [themeTypeChoosen, setThemeType] = useState(localStorage.getItem('theme') || themeTypeName.LIGHT)
+
+  const chooseTheme = name => () => {
+    if (themeTypeChoosen !== name) {
+      localStorage.setItem('theme', name)
+      setThemeType(name)
+    }
+  }
   
   return (
-    <div className="App">
-      <h1>TERIS</h1>
-      <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
-    </div>
+    <ThemeProvider theme={createTheme(themeTypeChoosen)}>
+      <MainWrapper>
+        <Container className="App">
+          <MainHeading className="text-center">TERIS RACE</MainHeading>
+          <ButtonGroup>
+            <Button onClick={chooseTheme(themeTypeName.LIGHT)}>Light mode</Button>
+            <Button onClick={chooseTheme(themeTypeName.DARK)}>Dark mode</Button>
+          </ButtonGroup>
+          <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
+        </Container>
+      </MainWrapper>
+    </ThemeProvider>
   );
 }
 
