@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import MainBoard from "./components/MainBoard";
 import './App.css';
 import Shapes from './shapes';
-import { cloneDeep, keyBy } from 'lodash';
+import { keyBy } from 'lodash';
 import allShapes from "./shapes/allShapes";
 import { Container, ButtonGroup, Button } from 'reactstrap';
 import { ThemeProvider } from "styled-components";
 import createTheme from './themes';
 import { themeTypeName } from './themes/themesType';
 import { MainWrapper, MainHeading } from './components/ElementsStyled';
-import { createRandomShape } from "./functions";
+import functions from "./functions";
 import { gameSettings } from './constants'
 
 const gameState = {
@@ -20,7 +20,7 @@ const gameState = {
 const shapes = Shapes(gameSettings)
 const shapeOnControl = {
   isPrepareOnGround: false,
-  ...createRandomShape()
+  ...functions.createRandomShape()
 }
 const initShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
 const control = {
@@ -36,69 +36,13 @@ const control = {
 function App() {
   const [cellPosition, setCellPosition] = useState(initShape)
   const [isShake, setShake] = useState(false)
-  const seperatorCell = data => {
-    const newCellPosition = cloneDeep(data)
-    const cellPositionWithoutShape = newCellPosition.filter(cell => !cell.userControl && !cell.isFalling)
-    const cellPositionWithShape = newCellPosition.filter(cell => cell.userControl && cell.isFalling)
-    return {
-      cellPositionWithShape,
-      cellPositionWithoutShape,
-    }
-  }
 
-  const handleCollusion = (shape, allRestCell) => {
-    const checkBottomCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top + 1 === cell.top && element.left === cell.left).length > 0
-    const checkLeftCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top === cell.top && element.left - 1 === cell.left).length > 0
-    const checkRightCollisionShape = (currentShape, cell) => currentShape.filter(element => element.top === cell.top && element.left + 1 === cell.left).length > 0
-
-    const isBottomCollusionCell = allRestCell.filter(cell => checkBottomCollisionShape(shape, cell)).length > 0
-    const isBottomCollusionGround = shape.filter(element => element.top + 1 === gameSettings.rows).length > 0
-    const isBottomCollusion = isBottomCollusionCell || isBottomCollusionGround
-
-    const isLeftCollusionCell = allRestCell.filter(cell => checkLeftCollisionShape(shape, cell)).length > 0
-    const isLeftCollusionGround = shape.filter(element => element.left - 1 < 0).length > 0
-    const isLeftCollusion = isLeftCollusionCell || isLeftCollusionGround
-
-    const isRightCollusionCell = allRestCell.filter(cell => checkRightCollisionShape(shape, cell)).length > 0
-    const isRightCollusionGround = shape.filter(element => element.left + 1 >= gameSettings.columns).length > 0
-    const isRightCollusion = isRightCollusionCell || isRightCollusionGround
-
-    const isOverlapsed = shape.filter(element =>
-      element.left < 0 ||
-      element.left >= gameSettings.columns ||
-      element.top >= gameSettings.rows ||
-      allRestCell.filter(cell => cell.left === element.left && cell.top === element.top).length > 0
-    ).length > 0
-
-    return {
-      isBottomCollusion,
-      isLeftCollusion,
-      isRightCollusion,
-      isOverlapsed
-    }
-  }
-
-  const getShapeInfo = (shape) => {
-    if (shape.length === 0) {
-      return {}
-    }
-    let xMin = shape[0].left
-    let yMin = shape[0].top
-    let xMax = shape[0].left
-    let yMax = shape[0].top
-    shape.forEach(cell => {
-      if (cell.left < xMin) xMin = cell.left;
-      if (cell.top < yMin) yMin = cell.top;
-      if (cell.left > xMax) xMax = cell.left;
-      if (cell.top > yMax) yMax = cell.top
-    })
-    return { xMin, yMin, xMax, yMax, color: shape[0].color }
-  }
+  
 
   const createShadowShape = (shape, allRestCell) => {
-    const shapeInfo = getShapeInfo(shape)
+    const shapeInfo = functions.getShapeInfo(shape)
     const allCellSameColumns = allRestCell.filter(cell => cell.left >= shapeInfo.xMin && cell.left <= shapeInfo.xMax)
-    const allCellSameColumnsInfo = getShapeInfo(allCellSameColumns)
+    const allCellSameColumnsInfo = functions.getShapeInfo(allCellSameColumns)
     if (!allCellSameColumnsInfo.yMin || !allCellSameColumnsInfo.yMax) {
       return shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection, shapeInfo.xMin, gameSettings.rows - 1 - (shapeInfo.yMax - shapeInfo.yMin), shapeInfo.color)
     }
@@ -107,7 +51,7 @@ function App() {
     for (let i = allCellSameColumnsInfo.yMin - (shapeInfo.yMax - shapeInfo.yMin + 1); i < allCellSameColumnsInfo.yMin + (shapeInfo.yMax - shapeInfo.yMin); i++) {
       const newTestShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection, shapeInfo.xMin, i, shapeInfo.color)
       
-      const { isBottomCollusion } = handleCollusion(newTestShape, allCellSameColumns)
+      const { isBottomCollusion } = functions.handleCollusion(newTestShape, allCellSameColumns)
       
       if (isBottomCollusion) {
         newShape = newTestShape
@@ -140,7 +84,7 @@ function App() {
   const calculatePointAndCellsPosition = (cellPosition, shape = []) => {
     const rows = {}
     const scoreRows = []
-    const { cellPositionWithShape, cellPositionWithoutShape } = seperatorCell([...cellPosition, ...shape])
+    const { cellPositionWithShape, cellPositionWithoutShape } = functions.seperatorCell([...cellPosition, ...shape])
     let newCellPositionWithoutShape = [...cellPositionWithoutShape]
     newCellPositionWithoutShape.forEach(cell => {
       if (!rows[cell.top]) {
@@ -168,7 +112,7 @@ function App() {
       let {
         cellPositionWithShape,
         cellPositionWithoutShape,
-      } = seperatorCell(cellPosition)
+      } = functions.seperatorCell(cellPosition)
 
       const destroyingCells = cellPositionWithoutShape.filter(cell => cell.isDestroying)
       const isHaveDestroyingCells = destroyingCells.length > 0
@@ -182,7 +126,7 @@ function App() {
           gameState.delayStep += gameSettings.fps
         }
       }
-      const { isBottomCollusion, isLeftCollusion, isRightCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
+      const { isBottomCollusion, isLeftCollusion, isRightCollusion } = functions.handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
 
       if (!isBottomCollusion || (isBottomCollusion && !shapeOnControl.isPrepareOnGround)) {
         if (!isLeftCollusion && control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
@@ -208,7 +152,7 @@ function App() {
           } else {
             gameState.isCaculatePoint = true
             cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
-            const newRandomShape = createRandomShape()
+            const newRandomShape = functions.createRandomShape()
             shapeOnControl.currentShape = newRandomShape.currentShape
             shapeOnControl.currentDirection = newRandomShape.currentDirection
             const newShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
@@ -226,7 +170,7 @@ function App() {
         gameState.isCaculatePoint = true
         const newCellPositionWithShape = shadowShapePosition.map((cell, index) => ({...cell, isFalling: false, userControl: false, id: cellPositionWithShape[index].id}))
         cellPositionWithShape = newCellPositionWithShape
-        const newRandomShape = createRandomShape()
+        const newRandomShape = functions.createRandomShape()
         shapeOnControl.currentShape = newRandomShape.currentShape
         shapeOnControl.currentDirection = newRandomShape.currentDirection
         const newShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
@@ -241,16 +185,16 @@ function App() {
         const newDirection = (shapeOnControl.currentDirection + 1) % (Object.keys(allShapes[shapeOnControl.currentShape]).length)
         
         const checkAndCreateShapeWithDir = (newCellPosition) => {
-          const { cellPositionWithShape, cellPositionWithoutShape } = seperatorCell(newCellPosition)
+          const { cellPositionWithShape, cellPositionWithoutShape } = functions.seperatorCell(newCellPosition)
           const {
             isOverlapsed
-          } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
+          } = functions.handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
           if (!isOverlapsed) {
             return cellPositionWithShape
           } 
           return null
         }
-        const {xMin, yMin, color} = getShapeInfo(cellPositionWithShape)
+        const {xMin, yMin, color} = functions.getShapeInfo(cellPositionWithShape)
         
         const newCellPositionWithShape = checkAndCreateShapeWithDir([...cellPositionWithoutShape, ...shapes(shapeOnControl.currentShape, newDirection, xMin, yMin, color, true)])
         
