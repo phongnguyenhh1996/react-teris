@@ -2,40 +2,27 @@ import React, { useState, useEffect } from 'react';
 import MainBoard from "./components/MainBoard";
 import './App.css';
 import Shapes from './shapes';
-import { cloneDeep, random, keyBy } from 'lodash';
+import { cloneDeep, keyBy } from 'lodash';
 import allShapes from "./shapes/allShapes";
 import { Container, ButtonGroup, Button } from 'reactstrap';
 import { ThemeProvider } from "styled-components";
 import createTheme from './themes';
 import { themeTypeName } from './themes/themesType';
 import { MainWrapper, MainHeading } from './components/ElementsStyled';
+import { createRandomShape } from "./functions";
+import { gameSettings } from './constants'
 
-const gameSettings = {
-  cellSize: 25,
-  columns: 16,
-  rows: 24,
-  fallSpeed: 500,
+const gameState = {
   fallStep: 0,
-  controlSpeed: 60,
-  fps: 60,
   isCaculatePoint: false,
-  delayStep: 0,
-  delayTime: 50
+  delayStep: 0
 }
 const shapes = Shapes(gameSettings)
-const shapesName = Object.keys(allShapes)
-const createRandomShape = () => {
-  const randomShape = shapesName[random(shapesName.length - 1)]
-  
-  return {
-    currentShape: randomShape,
-    currentDirection:  random(Object.keys(allShapes[randomShape]).length - 1)
-  }
-}
 const shapeOnControl = {
   isPrepareOnGround: false,
   ...createRandomShape()
 }
+const initShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
 const control = {
   left: false,
   right: false,
@@ -44,7 +31,7 @@ const control = {
   controlSpeedStep: gameSettings.controlSpeed
 }
 
-const initShape = shapes(shapeOnControl.currentShape, shapeOnControl.currentDirection)
+
 
 function App() {
   const [cellPosition, setCellPosition] = useState(initShape)
@@ -186,13 +173,13 @@ function App() {
       const destroyingCells = cellPositionWithoutShape.filter(cell => cell.isDestroying)
       const isHaveDestroyingCells = destroyingCells.length > 0
       if (isHaveDestroyingCells) {
-        if (gameSettings.delayStep >= gameSettings.delayTime) {
+        if (gameState.delayStep >= gameSettings.delayTime) {
           cellPositionWithoutShape = handleFallingCell(cellPositionWithoutShape)
           let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
-          gameSettings.delayStep = 0
+          gameState.delayStep = 0
           return setCellPosition(newCellPosition)
         } else {
-          gameSettings.delayStep += gameSettings.fps
+          gameState.delayStep += gameSettings.fps
         }
       }
       const { isBottomCollusion, isLeftCollusion, isRightCollusion } = handleCollusion(cellPositionWithShape, cellPositionWithoutShape)
@@ -211,15 +198,15 @@ function App() {
           control.controlSpeedStep = 0
         }
       }
-      gameSettings.fallStep += gameSettings.fps
-      if (gameSettings.fallStep >= gameSettings.fallSpeed) {
-        gameSettings.fallStep = 0
+      gameState.fallStep += gameSettings.fps
+      if (gameState.fallStep >= gameSettings.fallSpeed) {
+        gameState.fallStep = 0
 
         if (isBottomCollusion) {
           if (!shapeOnControl.isPrepareOnGround) {
             shapeOnControl.isPrepareOnGround = true
           } else {
-            gameSettings.isCaculatePoint = true
+            gameState.isCaculatePoint = true
             cellPositionWithShape = cellPositionWithShape.map(cell => ({...cell,  isFalling: false, userControl: false}))
             const newRandomShape = createRandomShape()
             shapeOnControl.currentShape = newRandomShape.currentShape
@@ -236,7 +223,7 @@ function App() {
         }
       }
       if (control.down) {
-        gameSettings.isCaculatePoint = true
+        gameState.isCaculatePoint = true
         const newCellPositionWithShape = shadowShapePosition.map((cell, index) => ({...cell, isFalling: false, userControl: false, id: cellPositionWithShape[index].id}))
         cellPositionWithShape = newCellPositionWithShape
         const newRandomShape = createRandomShape()
@@ -276,9 +263,9 @@ function App() {
       }
       
       let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
-      if (gameSettings.isCaculatePoint) {
+      if (gameState.isCaculatePoint) {
         newCellPosition = calculatePointAndCellsPosition(newCellPosition)
-        gameSettings.isCaculatePoint = false
+        gameState.isCaculatePoint = false
       }
       setCellPosition(newCellPosition)
     }, gameSettings.fps);
