@@ -119,6 +119,8 @@ function App() {
       if (isHaveDestroyingCells) {
         if (gameState.delayStep >= gameSettings.delayTime) {
           cellPositionWithoutShape = handleFallingCell(cellPositionWithoutShape)
+          const shadowShape = createShadowShape(cellPositionWithShape, cellPositionWithoutShape)
+          setShadowShapePosition(shadowShape)
           let newCellPosition = [...cellPositionWithoutShape, ...cellPositionWithShape]
           gameState.delayStep = 0
           return setCellPosition(newCellPosition)
