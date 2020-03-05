@@ -1,6 +1,6 @@
 import allShapes from "../shapes/allShapes";
 import { random, cloneDeep, keyBy } from "lodash";
-import { gameSettings, movementKeys } from '../constants'
+import { gameSettings } from '../constants'
 import generateShape from "../shapes";
 
 const createRandomShape = () => {
@@ -139,17 +139,14 @@ const calculatePointAndCellsPosition = (cellPosition, shape = []) => {
 }
 
 const handleControlLeftRight = (shapeCollusion, shapeOnControl, control, cellPosition, setShadowShapePosition) => {
-  if (control.keyDown[movementKeys.LEFT] || control.keyDown[movementKeys.RIGHT]) {
-    control.controlSpeedStep += gameSettings.fps
-  }
   if (!shapeCollusion.isBottomCollusion || (shapeCollusion.isBottomCollusion && !shapeOnControl.isPrepareOnGround)) {
-    if (!shapeCollusion.isLeftCollusion && control.keyDown[movementKeys.LEFT] && control.controlSpeedStep >= gameSettings.controlSpeed) {
+    if (!shapeCollusion.isLeftCollusion && control.left && control.controlSpeedStep >= gameSettings.controlSpeed) {
       cellPosition.cellPositionWithShape = cellPosition.cellPositionWithShape.map(cell => ({...cell, left: cell.left - 1}))
       const shadowShape = createShadowShape(cellPosition.cellPositionWithShape, cellPosition.cellPositionWithoutShape, shapeOnControl)
       setShadowShapePosition(shadowShape)
       control.controlSpeedStep = 0
     }
-    if (!shapeCollusion.isRightCollusion && control.keyDown[movementKeys.RIGHT]  && control.controlSpeedStep >= gameSettings.controlSpeed) {
+    if (!shapeCollusion.isRightCollusion && control.right && control.controlSpeedStep >= gameSettings.controlSpeed) {
       cellPosition.cellPositionWithShape = cellPosition.cellPositionWithShape.map(cell => ({...cell, left: cell.left + 1}))
       const shadowShape = createShadowShape(cellPosition.cellPositionWithShape, cellPosition.cellPositionWithoutShape, shapeOnControl)
       setShadowShapePosition(shadowShape)
@@ -159,8 +156,7 @@ const handleControlLeftRight = (shapeCollusion, shapeOnControl, control, cellPos
 }
 
 const handleControlDown = (cellPosition, shadowShapePosition, control, gameState, shapeOnControl, setShadowShapePosition, setShake) => {
-  if (control.keyDown[movementKeys.DOWN] && !control.isExecuted[movementKeys.DOWN]) {
-    control.isExecuted[movementKeys.DOWN] = true
+  if (control.down) {
     gameState.isCaculatePoint = true
     const newCellPositionWithShape = shadowShapePosition.map((cell, index) => ({...cell, isFalling: false, userControl: false, id: cellPosition.cellPositionWithShape[index].id}))
     cellPosition.cellPositionWithShape = newCellPositionWithShape
@@ -172,12 +168,13 @@ const handleControlDown = (cellPosition, shadowShapePosition, control, gameState
     cellPosition.cellPositionWithShape.push(...newShape)
     setShadowShapePosition(shadowShape)
     setShake(true)
+    control.down = false
   }
 }
 
 const handleControlRotate = (cellPosition ,control, shapeOnControl, setShadowShapePosition) => {
-  if (control.keyDown[movementKeys.UP] && !control.isExecuted[movementKeys.UP]) {
-    control.isExecuted[movementKeys.UP] = true
+  if (control.rotate && control.controlSpeedStep >= gameSettings.controlSpeed) {
+    control.controlSpeedStep = 0
     const newDirection = (shapeOnControl.currentDirection + 1) % (Object.keys(allShapes[shapeOnControl.currentShape]).length)
     
     const checkAndCreateShapeWithDir = (newCellPosition) => {

@@ -8,9 +8,8 @@ import createTheme from './themes';
 import { themeTypeName } from './themes/themesType';
 import { MainWrapper, MainHeading } from './components/ElementsStyled';
 import functions from "./functions";
-import { gameSettings, movementKeys } from './constants'
+import { gameSettings } from './constants'
 import { SwitchLight } from './components/SwitchLight';
-import { ScoreBoard } from './components/ScoreBoard';
 
 const gameState = {
   fallStep: 0,
@@ -23,8 +22,10 @@ const shapeOnControl = {
 }
 const initShape = generateShape(shapeOnControl.currentShape, shapeOnControl.currentDirection)
 const control = {
-  keyDown: {},
-  isExecuted: {},
+  left: false,
+  right: false,
+  rotate: false,
+  down: false,
   controlSpeedStep: gameSettings.controlSpeed
 }
 
@@ -63,17 +64,44 @@ function App() {
   }, [cellPosition, shadowShapePosition])
 
   const handleKeyDown = (e) => {
-    if(!control.keyDown[e.keyCode]) {
-      control.keyDown[e.keyCode] = true;
-      if (e.keyCode === movementKeys.LEFT || e.keyCode === movementKeys.RIGHT) {
-        control.controlSpeedStep = gameSettings.controlSpeed
-      } else {
-        control.isExecuted[e.keyCode] = false;
-      }
+    switch (e.keyCode) {
+      case 37:
+        control.left = true
+        control.controlSpeedStep += gameSettings.fps
+        break;
+      case 39:
+        control.right = true
+        control.controlSpeedStep += gameSettings.fps
+        break;
+      case 38:
+        control.rotate = true
+        control.controlSpeedStep += gameSettings.fps
+        break;
+      case 40:
+        control.down = true
+        break;
+      default:
+        break;
     }
   }
+
   const handleKeyUp = (e) => {
-    delete control.keyDown[e.keyCode];
+    switch (e.keyCode) {
+      case 37:
+        control.left = false
+        control.controlSpeedStep = gameSettings.controlSpeed
+        break;
+      case 39:
+        control.right = false
+        control.controlSpeedStep = gameSettings.controlSpeed
+        break;
+      case 38:
+        control.rotate = false
+        control.controlSpeedStep += gameSettings.controlSpeed
+        break;
+      default:
+        break;
+    }
   }
 
   useEffect(() => {
@@ -99,12 +127,9 @@ function App() {
     <ThemeProvider theme={createTheme(themeTypeChoosen)}>
       <MainWrapper>
         <SwitchLight value={isLightOn} onChange={chooseTheme} isReadOnly/>
-        <MainHeading className="text-center">TERIS RACE</MainHeading>
         <Container className="App">
-          <div className="d-flex justify-content-center align-items-start">
-            <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
-            <ScoreBoard />
-          </div>
+          <MainHeading className="text-center">TERIS RACE</MainHeading>
+          <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
         </Container>
       </MainWrapper>
     </ThemeProvider>
