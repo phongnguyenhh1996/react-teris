@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const MainWrapper = styled.div`
+const MainWrapper = styled.div`
   background-color: ${props => props.theme.backgroundWrapper};
   min-height: 100vh;
   font-family: 'Righteous', cursive;
@@ -10,6 +10,23 @@ export const MainWrapper = styled.div`
   position: relative;
 `
 
-export const MainHeading = styled.h1`
+const MainHeading = styled.h1`
   color: ${props => props.theme.mainHeading};
 `
+
+const FixedTop = styled.div`
+  position: fixed;
+  top: 10px;
+  right: 10px;
+`
+
+const Text = styled.span`
+  color: ${props => props.theme.textColor};
+`
+
+export {
+  MainWrapper,
+  MainHeading,
+  FixedTop,
+  Text
+}

@@ -1,9 +1,10 @@
 import { uniqueId } from "lodash";
 import shapes from "./allShapes";
+import { gameSettings } from "../constants";
 
 const colorArr = ["#A848E3", "#E4E250", "#F6A8DE", "#ABE124", "#D04D41", "#F20B35", "#2ED8DB", "#1708EF", "#F6847E", "#FCB01E", "#39FBBD", "#6FFA14"]
 
-const generateShape = (shapeName, direction, x0, y0, customColor, isRotate) => {
+const generateShape = (shapeName, direction, x0 = gameSettings.columns/2-1, y0 = 0, customColor, isRotate = false) => {
   const color = colorArr[Math.round(Math.random() * (colorArr.length - 1))]
   const shape = shapes[shapeName]
   const shapeCurrentDirection = shape[direction]
@@ -39,6 +40,4 @@ const generateShape = (shapeName, direction, x0, y0, customColor, isRotate) => {
   return data
 }
 
-export default function(gameSettings) {
-  return (shapeName, direction, x0 = gameSettings.columns/2-1, y0 = 0, customColor, isRotate = false) => generateShape(shapeName, direction, x0, y0, customColor, isRotate)
-}
+export default generateShape
