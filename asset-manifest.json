@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/teris-test/static/css/main.750e7a47.chunk.css",
-    "main.js": "/teris-test/static/js/main.640f0a5d.chunk.js",
-    "main.js.map": "/teris-test/static/js/main.640f0a5d.chunk.js.map",
-    "runtime-main.js": "/teris-test/static/js/runtime-main.26c30231.js",
-    "runtime-main.js.map": "/teris-test/static/js/runtime-main.26c30231.js.map",
-    "static/css/2.fb76c2e5.chunk.css": "/teris-test/static/css/2.fb76c2e5.chunk.css",
-    "static/js/2.683a5bcf.chunk.js": "/teris-test/static/js/2.683a5bcf.chunk.js",
-    "static/js/2.683a5bcf.chunk.js.map": "/teris-test/static/js/2.683a5bcf.chunk.js.map",
-    "index.html": "/teris-test/index.html",
-    "precache-manifest.01fb425b42ee2ba945d6a4157e643306.js": "/teris-test/precache-manifest.01fb425b42ee2ba945d6a4157e643306.js",
-    "service-worker.js": "/teris-test/service-worker.js",
-    "static/css/2.fb76c2e5.chunk.css.map": "/teris-test/static/css/2.fb76c2e5.chunk.css.map",
-    "static/css/main.750e7a47.chunk.css.map": "/teris-test/static/css/main.750e7a47.chunk.css.map",
-    "static/js/2.683a5bcf.chunk.js.LICENSE.txt": "/teris-test/static/js/2.683a5bcf.chunk.js.LICENSE.txt",
-    "static/media/index.css": "/teris-test/static/media/righteous-latin-400.f4c0e9a8.woff"
+    "main.css": "/react-teris/static/css/main.750e7a47.chunk.css",
+    "main.js": "/react-teris/static/js/main.e8dc2613.chunk.js",
+    "main.js.map": "/react-teris/static/js/main.e8dc2613.chunk.js.map",
+    "runtime-main.js": "/react-teris/static/js/runtime-main.e0973d5e.js",
+    "runtime-main.js.map": "/react-teris/static/js/runtime-main.e0973d5e.js.map",
+    "static/css/2.ee4f5cb3.chunk.css": "/react-teris/static/css/2.ee4f5cb3.chunk.css",
+    "static/js/2.c2154739.chunk.js": "/react-teris/static/js/2.c2154739.chunk.js",
+    "static/js/2.c2154739.chunk.js.map": "/react-teris/static/js/2.c2154739.chunk.js.map",
+    "index.html": "/react-teris/index.html",
+    "precache-manifest.326b894c893bed577c4a1e73899174e3.js": "/react-teris/precache-manifest.326b894c893bed577c4a1e73899174e3.js",
+    "service-worker.js": "/react-teris/service-worker.js",
+    "static/css/2.ee4f5cb3.chunk.css.map": "/react-teris/static/css/2.ee4f5cb3.chunk.css.map",
+    "static/css/main.750e7a47.chunk.css.map": "/react-teris/static/css/main.750e7a47.chunk.css.map",
+    "static/js/2.c2154739.chunk.js.LICENSE.txt": "/react-teris/static/js/2.c2154739.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/react-teris/static/media/righteous-latin-400.f4c0e9a8.woff"
   },
   "entrypoints": [
-    "static/js/runtime-main.26c30231.js",
-    "static/css/2.fb76c2e5.chunk.css",
-    "static/js/2.683a5bcf.chunk.js",
+    "static/js/runtime-main.e0973d5e.js",
+    "static/css/2.ee4f5cb3.chunk.css",
+    "static/js/2.c2154739.chunk.js",
     "static/css/main.750e7a47.chunk.css",
-    "static/js/main.640f0a5d.chunk.js"
+    "static/js/main.e8dc2613.chunk.js"
   ]
 }
