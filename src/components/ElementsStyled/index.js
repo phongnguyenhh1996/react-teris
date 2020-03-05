@@ -12,6 +12,7 @@ const MainWrapper = styled.div`
 
 const MainHeading = styled.h1`
   color: ${props => props.theme.mainHeading};
+  margin-bottom: 30px;
 `
 
 const FixedTop = styled.div`

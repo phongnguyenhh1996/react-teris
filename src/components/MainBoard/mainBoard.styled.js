@@ -39,9 +39,9 @@ const MainBoard = styled.div`
   height: ${(props) => props.cellSize*props.rows}px;
   position: relative;
   background-color: ${props => props.theme.backgroundMainBoard};
-  margin: auto;
   animation: ${props => props.isShake && shakeAnimation} 0.3s linear;
   overflow: hidden;
+  margin-right: 50px;
 `
 
 const MainBoard__cell = styled.div.attrs(props => ({

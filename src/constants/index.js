@@ -8,6 +8,14 @@ const gameSettings = {
   delayTime: 50
 }
 
+const movementKeys = {
+  LEFT: 37,
+  RIGHT: 39,
+  UP: 38,
+  DOWN: 40
+}
+
 export {
-  gameSettings
+  gameSettings,
+  movementKeys
 }
