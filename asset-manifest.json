@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/static/css/main.750e7a47.chunk.css",
-    "main.js": "/static/js/main.fc51eadf.chunk.js",
-    "main.js.map": "/static/js/main.fc51eadf.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.2c42d3d9.js",
-    "runtime-main.js.map": "/static/js/runtime-main.2c42d3d9.js.map",
-    "static/css/2.7a1e22f5.chunk.css": "/static/css/2.7a1e22f5.chunk.css",
-    "static/js/2.ec8470cf.chunk.js": "/static/js/2.ec8470cf.chunk.js",
-    "static/js/2.ec8470cf.chunk.js.map": "/static/js/2.ec8470cf.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.52a0b4163659b14810635b942a0e4e4f.js": "/precache-manifest.52a0b4163659b14810635b942a0e4e4f.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.7a1e22f5.chunk.css.map": "/static/css/2.7a1e22f5.chunk.css.map",
-    "static/css/main.750e7a47.chunk.css.map": "/static/css/main.750e7a47.chunk.css.map",
-    "static/js/2.ec8470cf.chunk.js.LICENSE.txt": "/static/js/2.ec8470cf.chunk.js.LICENSE.txt",
-    "static/media/index.css": "/static/media/righteous-latin-400.f4c0e9a8.woff"
+    "main.css": "/teris-test/static/css/main.750e7a47.chunk.css",
+    "main.js": "/teris-test/static/js/main.640f0a5d.chunk.js",
+    "main.js.map": "/teris-test/static/js/main.640f0a5d.chunk.js.map",
+    "runtime-main.js": "/teris-test/static/js/runtime-main.26c30231.js",
+    "runtime-main.js.map": "/teris-test/static/js/runtime-main.26c30231.js.map",
+    "static/css/2.fb76c2e5.chunk.css": "/teris-test/static/css/2.fb76c2e5.chunk.css",
+    "static/js/2.683a5bcf.chunk.js": "/teris-test/static/js/2.683a5bcf.chunk.js",
+    "static/js/2.683a5bcf.chunk.js.map": "/teris-test/static/js/2.683a5bcf.chunk.js.map",
+    "index.html": "/teris-test/index.html",
+    "precache-manifest.01fb425b42ee2ba945d6a4157e643306.js": "/teris-test/precache-manifest.01fb425b42ee2ba945d6a4157e643306.js",
+    "service-worker.js": "/teris-test/service-worker.js",
+    "static/css/2.fb76c2e5.chunk.css.map": "/teris-test/static/css/2.fb76c2e5.chunk.css.map",
+    "static/css/main.750e7a47.chunk.css.map": "/teris-test/static/css/main.750e7a47.chunk.css.map",
+    "static/js/2.683a5bcf.chunk.js.LICENSE.txt": "/teris-test/static/js/2.683a5bcf.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/teris-test/static/media/righteous-latin-400.f4c0e9a8.woff"
   },
   "entrypoints": [
-    "static/js/runtime-main.2c42d3d9.js",
-    "static/css/2.7a1e22f5.chunk.css",
-    "static/js/2.ec8470cf.chunk.js",
+    "static/js/runtime-main.26c30231.js",
+    "static/css/2.fb76c2e5.chunk.css",
+    "static/js/2.683a5bcf.chunk.js",
     "static/css/main.750e7a47.chunk.css",
-    "static/js/main.fc51eadf.chunk.js"
+    "static/js/main.640f0a5d.chunk.js"
   ]
 }
