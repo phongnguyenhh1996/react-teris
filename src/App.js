@@ -10,6 +10,7 @@ import { MainWrapper, MainHeading } from './components/ElementsStyled';
 import functions from "./functions";
 import { gameSettings } from './constants'
 import { SwitchLight } from './components/SwitchLight';
+import { TouchControl } from './components/TouchControl';
 
 const gameState = {
   fallStep: 0,
@@ -64,6 +65,8 @@ function App() {
   }, [cellPosition, shadowShapePosition])
 
   const handleKeyDown = (e) => {
+    console.log(e.keyCode);
+    
     switch (e.keyCode) {
       case 37:
         control.left = true
@@ -86,6 +89,7 @@ function App() {
   }
 
   const handleKeyUp = (e) => {
+    console.log(e.keyCode);
     switch (e.keyCode) {
       case 37:
         control.left = false
@@ -127,9 +131,10 @@ function App() {
     <ThemeProvider theme={createTheme(themeTypeChoosen)}>
       <MainWrapper>
         <SwitchLight value={isLightOn} onChange={chooseTheme} isReadOnly/>
-        <Container className="App">
+        <Container className="App px-0">
           <MainHeading className="text-center">TERIS RACE</MainHeading>
           <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
+          <TouchControl handleKeyUp={handleKeyUp} handleKeyDown={handleKeyDown}/>
         </Container>
       </MainWrapper>
     </ThemeProvider>
