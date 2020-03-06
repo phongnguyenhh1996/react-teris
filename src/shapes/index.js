@@ -1,4 +1,4 @@
-import { uniqueId } from "lodash";
+import uniqueId from "lodash/uniqueId";
 import shapes from "./allShapes";
 import { gameSettings } from "../constants";
 

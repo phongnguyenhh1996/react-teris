@@ -1,5 +1,7 @@
 import allShapes from "../shapes/allShapes";
-import { random, cloneDeep, keyBy } from "lodash";
+import random from "lodash/random";
+import cloneDeep from "lodash/cloneDeep";
+import keyBy from "lodash/keyBy";
 import { gameSettings } from '../constants'
 import generateShape from "../shapes";
 

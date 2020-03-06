@@ -12,6 +12,9 @@ const MainWrapper = styled.div`
 
 const MainHeading = styled.h1`
   color: ${props => props.theme.mainHeading};
+  @media screen and (max-width: 991px){
+    font-size: 22px;
+  }
 `
 
 const FixedTop = styled.div`

@@ -11,7 +11,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
     <div className="d-flex justify-content-between mt-3 mx-3">
       <div>
         <Button
-          className="mr-3 py-2 px-3"
+          className="mr-3 py-3 px-4"
           outline
           color="info"
           type="button"
@@ -21,7 +21,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
           <AiFillCaretLeft />
         </Button>
         <Button
-          className="py-2 px-3"
+          className="py-3 px-4"
           outline
           color="info"
           type="button"
@@ -33,7 +33,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
       </div>
       <div>
         <Button
-          className="mr-3 py-2 px-3"
+          className="mr-3 py-3 px-4"
           outline
           color="info"
           type="button"
@@ -43,7 +43,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
           <AiFillCaretDown />
         </Button>
         <Button
-          className="py-2 px-3"
+          className="py-3 px-4"
           outline
           color="info"
           type="button"
