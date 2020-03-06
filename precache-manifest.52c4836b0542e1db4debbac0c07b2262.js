@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "3730598548f74c4c85a3f0ccc3d51d9d",
+    "revision": "d2fb1fac0d882af2fdb8b88692929c07",
     "url": "/react-teris/index.html"
   },
   {
@@ -8,8 +8,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/react-teris/static/css/2.ee4f5cb3.chunk.css"
   },
   {
-    "revision": "96c61e6a217630d6da16",
-    "url": "/react-teris/static/css/main.750e7a47.chunk.css"
+    "revision": "97a5f66a9e8a6823e5f9",
+    "url": "/react-teris/static/css/main.651e1287.chunk.css"
   },
   {
     "revision": "1bfbaa1954c64bd9d609",
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/react-teris/static/js/2.1b7198dc.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "96c61e6a217630d6da16",
-    "url": "/react-teris/static/js/main.df708e27.chunk.js"
+    "revision": "97a5f66a9e8a6823e5f9",
+    "url": "/react-teris/static/js/main.a6633b96.chunk.js"
   },
   {
     "revision": "d29d3fbacd6b552163c2",
