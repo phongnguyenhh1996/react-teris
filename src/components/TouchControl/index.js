@@ -14,6 +14,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
           className="mr-3 py-2 px-3"
           outline
           color="info"
+          type="button"
           onTouchEnd={handleTouchEnd(37)}
           onTouchStart={handleTouchStart(37)}
         >
@@ -23,6 +24,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
           className="py-2 px-3"
           outline
           color="info"
+          type="button"
           onTouchEnd={handleTouchEnd(39)}
           onTouchStart={handleTouchStart(39)}
         >
@@ -34,6 +36,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
           className="mr-3 py-2 px-3"
           outline
           color="info"
+          type="button"
           onTouchEnd={handleTouchEnd(40)}
           onTouchStart={handleTouchStart(40)}
         >
@@ -43,6 +46,7 @@ export const TouchControl = ({handleKeyDown, handleKeyUp}) => {
           className="py-2 px-3"
           outline
           color="info"
+          type="button"
           onTouchEnd={handleTouchEnd(38)}
           onTouchStart={handleTouchStart(38)}
         >
