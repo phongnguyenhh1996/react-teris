@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/react-teris/precache-manifest.52c4836b0542e1db4debbac0c07b2262.js"
+  "/react-teris/precache-manifest.3d85a8ea6408fc6502180bb16bbf0d8a.js"
 );
 
 self.addEventListener('message', (event) => {
