@@ -12,6 +12,7 @@ input, select { font-size: 100%; }
 button {
   touch-action: manipulation
 }
+
 * {
   transition: background-color .5s ease, color .5s ease;
 }

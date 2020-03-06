@@ -65,8 +65,6 @@ function App() {
   }, [cellPosition, shadowShapePosition])
 
   const handleKeyDown = (e) => {
-    console.log(e.keyCode);
-    
     switch (e.keyCode) {
       case 37:
         control.left = true
@@ -89,7 +87,6 @@ function App() {
   }
 
   const handleKeyUp = (e) => {
-    console.log(e.keyCode);
     switch (e.keyCode) {
       case 37:
         control.left = false
@@ -111,9 +108,19 @@ function App() {
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
+    
+    const htmlElement = document.querySelector('.hover-active');
+    function touchStart () {
+      htmlElement.classList.remove('hover-active');
+      htmlElement.classList.add('no-hover-active');
+      htmlElement.removeEventListener('touchstart', touchStart);
+    }
+
+    htmlElement.addEventListener('touchstart', touchStart);
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
-      window.addEventListener('keyup', handleKeyUp)
+      window.removeEventListener('keyup', handleKeyUp)
+      htmlElement.removeEventListener('touchstart', touchStart);
     }
   }, [])
 
@@ -129,9 +136,9 @@ function App() {
   
   return (
     <ThemeProvider theme={createTheme(themeTypeChoosen)}>
-      <MainWrapper>
+      <MainWrapper className="hover-active">
         <SwitchLight value={isLightOn} onChange={chooseTheme} isReadOnly/>
-        <Container className="App px-0">
+        <Container className="App">
           <MainHeading className="text-center">TERIS RACE</MainHeading>
           <MainBoard gameSettings={gameSettings} cellsPosition={cellPosition} shadowShapePosition={shadowShapePosition} isShake={isShake} setShake={setShake} />
           <TouchControl handleKeyUp={handleKeyUp} handleKeyDown={handleKeyDown}/>

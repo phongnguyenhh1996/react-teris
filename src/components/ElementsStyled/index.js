@@ -8,6 +8,14 @@ const MainWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   position: relative;
+  &.no-hover-active {
+    button:hover, button:active, button:focus {
+      color: inherit !important;
+      background-color: inherit !important;
+      outline: inherit !important;
+      box-shadow: inherit !important;
+    }
+  }
 `
 
 const MainHeading = styled.h1`
